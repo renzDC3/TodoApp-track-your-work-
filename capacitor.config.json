@@ -1,0 +1,7 @@
+
+{
+  "appId": "com.yourname.todo",
+  "appName": "Todo List (track your work)",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

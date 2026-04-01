@@ -1,0 +1,326 @@
+/* Base Reset for Full Screen */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  
+  overflow-x: hidden;
+}
+.App_Title {
+  background: transparent;
+  font-size: 28px;
+  padding: 6px;
+  /* Your requested static shadow */
+  box-shadow: rgb(98, 0, 255) 3px 3px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-family: Frutiger, sans-serif;
+  color: rgb(254, 255, 240);
+}
+
+/* --- KEYFRAMES --- */
+
+/* Makes the entire border fade in and out of a glow */
+@keyframes borderGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(50, 5, 212, 0.2);
+    border-color: rgba(50, 5, 212, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(50, 5, 212, 0.6);
+    border-color: rgba(80, 40, 255, 1);
+  }
+}
+
+/* Makes a "beam" of light circle the border */
+@keyframes borderTrace {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Main Container - Spans full screen */
+.todo-container {
+  color: #ffffff;
+  background-color: #1a1a1a;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+}
+
+/* Header */
+.todo-header {
+  border-radius: 8px;
+  /* Updated background to a moving gradient */
+  background: linear-gradient(-45deg, #060411, #291e5e, #110a30, #251663);
+  background-size: 400% 400%;
+  animation: gradientBG 7s ease infinite;
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #000;
+  margin-bottom: 20px;
+  color: white; /* Ensures text stays visible on dark background */
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+/* Layout for the inside of the notification popup */
+.notification-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #000;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+}
+
+.popup-close-x {
+  background: transparent;
+  border: 1px solid #000; /* Matching your wireframe style */
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 5px;
+  line-height: 1;
+}
+
+/* Ensure the popup doesn't close when you click inside it */
+.notification-popup {
+  /* ... existing styles ... */
+  cursor: default; 
+}
+
+.notification-bell-container {
+  position: relative;
+  cursor: pointer;
+}
+.bell-img{
+  width:32px;
+  height: 32px;
+  background-color: white;
+  border-radius: 100%;
+}
+
+.notification-badge {
+  
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  border: 1px solid #000;
+  background: #fff;
+  padding: 2px 5px;
+  font-size: 10px;
+}
+
+/* Notification Popup */
+/* The Main Popup Container */
+.notification-popup {
+  position: absolute;
+  top: 70px; /* Increased slightly to clear the header glow */
+  right: 0;
+  width: 90vw; /* Better fit for mobile screens */
+  max-width: 320px;
+  
+  /* Glassmorphism Effect */
+  background: rgba(30, 30, 30, 0.8); /* Semi-transparent dark */
+  backdrop-filter: blur(12px); /* Frosts the content behind it */
+  -webkit-backdrop-filter: blur(12px);
+  
+  /* Modern Border & Shadow */
+  border: 1px solid rgba(0, 0, 0, 0.4); /* Purple tinted border */
+  border-radius: 16px; /* Smoother, rounder corners */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+              0 0 15px rgba(98, 0, 255, 0.2);
+  
+  padding: 18px;
+  z-index: 1000;
+  
+  /* Entrance Animation */
+  animation: popupFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header inside the popup */
+.notification-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notification-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #bb7815; /* Light purple */
+  font-weight: bold;
+}
+
+/* Individual Notification Items */
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border-left: 3px solid rgb(98, 0, 255);
+  transition: background 0.2s;
+}
+
+.notification-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.notification-text {
+  font-size: 15px;
+  color: #ffffff;
+}
+
+/* Close/Dismiss Buttons */
+.popup-close-x, .notification-dismiss-btn {
+  background: transparent;
+  border: none;
+  color: #ff7675; /* Soft red */
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 5px;
+  transition: transform 0.2s;
+}
+
+.popup-close-x:hover, .notification-dismiss-btn:hover {
+  transform: scale(1.2);
+  color: #d63031;
+}
+
+.notification-empty {
+  text-align: center;
+  color: #636e72;
+  font-size: 14px;
+  padding: 10px 0;
+}
+.notification-dismiss{
+  background-color: #f11212;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed #000;
+  padding: 5px 0;
+}
+
+/* Inputs - Clean and Full Width */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.task-input, .date-input, .file-input {
+  border-radius: 10px;
+  color: #c78d22;
+  width: 100%;
+  padding: 15px;
+  border: none; /* Removed all borders first for total control */
+  border-bottom: 2px solid #000000;
+  border-right: 2px solid #000000;
+  font-size: 16px;
+  background: transparent;
+  outline: none; /* This removes the default focus border */
+}
+.task-input:focus, .date-input:focus {
+  border-bottom: 2px solid rgb(53, 5, 131);
+  border-right: 2px solid rgb(58, 7, 139);
+}
+.add-task-btn {
+  color: #ffffff;
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #595c59;
+  border-radius: 22px;
+  background: transparent;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  outline: none; /* Removes focus border on the button */
+  transition: all 0.2s ease;
+}
+
+/* Removes focus on click for all elements globally just to be safe */
+*:focus {
+  outline: none !important;
+}
+.image-preview {
+  width: 100px;
+  height: auto;
+  border: 1px solid #000;
+}
+
+/* Task List */
+.task-list {
+  list-style: none;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #000;
+}
+
+.task-image { 
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50px;
+  margin-right: 15px;
+}
+
+.task-details {
+  flex-grow: 1;
+}
+
+.task-title {
+  color: rgb(233, 207, 160);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.task-due-date {
+  font-size: 12px;
+}
+
+.delete-task-btn {
+  border: 1px solid #000;
+  background: transparent;
+  padding: 5px 10px;
+  cursor: pointer;
+}

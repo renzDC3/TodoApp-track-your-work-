@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Todo List (track your work)</string>
+    <string name="title_activity_main">Todo List (track your work)</string>
+    <string name="package_name">com.renz.todo</string>
+    <string name="custom_url_scheme">com.renz.todo</string>
+</resources>
