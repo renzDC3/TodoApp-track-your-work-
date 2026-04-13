@@ -1,154 +1,180 @@
-// src/App.jsx
 import { useState, useRef, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "./db";
 import "./App.css";
 
-const DEFAULT_IMAGE = "/to-do-list.png"; 
+const DEFAULT_IMAGE = "/to-do-list.png";
+const ICON_CHOICES = [
+  { value: "/icons/icon-1.png", label: "Icon 1" },
+  { value: "/icons/icon-2.png", label: "Icon 2" },
+  { value: "/icons/icon-3.png", label: "Icon 3" },
+  { value: "/icons/icon-4.png", label: "Icon 4" },
+  { value: "/icons/icon-5.png", label: "Icon 5" },
+  { value: "/icons/icon-6.png", label: "Icon 6" },
+  { value: "/icons/icon-7.png", label: "Icon 7" },
+  { value: "/icons/icon-8.png", label: "Icon 8" },
+];
 
 const App = () => {
   const [newTask, setNewTask] = useState("");
-  const [taskImage, setTaskImage] = useState(null);
-  const [dueDate, setDueDate] = useState(""); 
-  const [showNotifications, setShowNotifications] = useState(false); 
-  
-  const fileInputRef = useRef(null);
-  const notificationRef = useRef(null); // Ref for the notification popup
+  const [selectedIcon, setSelectedIcon] = useState(ICON_CHOICES[0].value);
+  const [showIconPicker, setShowIconPicker] = useState(false);
+
+  const iconPickerRef = useRef(null);
   const tasks = useLiveQuery(() => db.tasks.toArray(), []);
 
-  // --- NEW: Click Outside Logic ---
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // If the popup is open and the click is NOT inside the popup, close it
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-        setShowNotifications(false);
+      if (iconPickerRef.current && !iconPickerRef.current.contains(event.target)) {
+        setShowIconPicker(false);
       }
     };
 
-    if (showNotifications) {
+    if (showIconPicker) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showNotifications]);
-
-  // Request Notification Permission
-  useEffect(() => {
-    if ("Notification" in window) {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  // Alarm Engine
-  useEffect(() => {
-    const checkAlarms = setInterval(async () => {
-      const allTasks = await db.tasks.toArray();
-      const now = new Date().getTime();
-
-      allTasks.forEach(async (task) => {
-        if (task.dueDate && !task.notified) {
-          const taskTime = new Date(task.dueDate).getTime();
-          if (now >= taskTime) {
-            if (Notification.permission === "granted") {
-              new Notification("Task Due!", { body: task.title, icon: task.image || DEFAULT_IMAGE });
-            }
-            await db.tasks.update(task.id, { notified: true, notificationDismissed: false });
-          }
-        }
-      });
-    }, 10000); 
-    return () => clearInterval(checkAlarms);
-  }, []);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setTaskImage(reader.result);
-      reader.readAsDataURL(file);
-    }
-  };
+  }, [showIconPicker]);
 
   const addTask = async () => {
     if (!newTask.trim()) return;
+
     await db.tasks.add({
       title: newTask,
-      image: taskImage,
-      dueDate: dueDate || null,
-      notified: false,
-      notificationDismissed: false 
+      icon: selectedIcon,
+      completed: false,
     });
-    setNewTask(""); setTaskImage(null); setDueDate("");
-    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    setNewTask("");
+    setSelectedIcon(ICON_CHOICES[0].value);
   };
 
-  const dismissNotification = async (id) => {
-    await db.tasks.update(id, { notificationDismissed: true });
+  const toggleTaskCompleted = async (task) => {
+    await db.tasks.update(task.id, { completed: !task.completed });
   };
 
-  const activeNotifications = tasks?.filter(t => t.notified && !t.notificationDismissed) || [];
-//color
+  const completedCount = tasks?.filter((task) => task.completed).length || 0;
+  const uncompletedCount = (tasks?.length || 0) - completedCount;
+  const selectedIconLabel = ICON_CHOICES.find((icon) => icon.value === selectedIcon)?.label || "Choose icon";
+
+  const renderTaskIcon = (iconValue, title) => {
+    if (iconValue && iconValue.startsWith("/")) {
+      return (
+        <img
+          src={iconValue}
+          alt={title}
+          className="task-image"
+          onError={(event) => {
+            event.currentTarget.src = DEFAULT_IMAGE;
+          }}
+        />
+      );
+    }
+
+    if (iconValue) {
+      return (
+        <div className="task-icon" aria-hidden="true">
+          {iconValue}
+        </div>
+      );
+    }
+
+    return <img src={DEFAULT_IMAGE} alt={title} className="task-image" />;
+  };
+
   return (
     <div className="todo-container">
-      <header className="todo-header">
+      <header className="todo-header todo-header-simple">
         <h1 className="App_Title">Todo List</h1>
-        <div className="notification-bell-container" onClick={() => setShowNotifications(!showNotifications)}>
-          <span className="bell-icon">
-            {/* Changed <image> to <img> and added a className */}
-            <img src="/notification.png" alt="Notification Bell" className="bell-img" />
-          </span>
-          {activeNotifications.length > 0 && (
-            <span className="notification-badge">{activeNotifications.length}</span>
-          )}
-        </div>
-
-        {showNotifications && (
-          <div className="notification-popup" ref={notificationRef}>
-            <div className="notification-popup-header">
-              <h3 className="notification-title">Notifications</h3>
-              {/* Close button for the popup itself */}
-              <button className="popup-close-x" onClick={() => setShowNotifications(false)}>×</button>
-            </div>
-            
-            {activeNotifications.length === 0 ? (
-              <p className="notification-empty">No new notifications.</p>
-            ) : (
-              <ul className="notification-list">
-                {activeNotifications.map(notif => (
-                  <li key={notif.id} className="notification-item">
-                    <span className="notification-text">{notif.title}</span>
-                    <button className="notification-dismiss" onClick={() => dismissNotification(notif.id)}>×</button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
       </header>
 
-      {/* Inputs */}
       <section className="input-section">
-        <input type="text" className="task-input" placeholder="Task" value={newTask} onChange={(e) => setNewTask(e.target.value)} />
-        <input type="datetime-local" className="date-input" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-        <input type="file" className="file-input" accept="image/*" onChange={handleImageChange} ref={fileInputRef} />
-        {taskImage && <img src={taskImage} alt="Preview" className="image-preview" />}
-        <button className="add-task-btn" onClick={addTask}>Add Task</button>
+        <input
+          type="text"
+          className="task-input"
+          placeholder="Task"
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+        />
+        <div className="icon-picker" ref={iconPickerRef}>
+          <span className="icon-picker-label">Choose icon</span>
+          <button type="button" className="icon-picker-trigger" onClick={() => setShowIconPicker((open) => !open)}>
+            <span className="icon-picker-preview">
+              <img
+                src={selectedIcon}
+                alt={selectedIconLabel}
+                className="icon-picker-preview-image"
+                onError={(event) => {
+                  event.currentTarget.src = DEFAULT_IMAGE;
+                }}
+              />
+            </span>
+            <span className="icon-picker-trigger-text">{selectedIconLabel}</span>
+          </button>
+
+          {showIconPicker && (
+            <div className="icon-picker-popup">
+              <div className="icon-options">
+                {ICON_CHOICES.map((iconOption) => (
+                  <button
+                    key={iconOption.value}
+                    type="button"
+                    className={`icon-option ${selectedIcon === iconOption.value ? "selected" : ""}`}
+                    onClick={() => {
+                      setSelectedIcon(iconOption.value);
+                      setShowIconPicker(false);
+                    }}
+                    aria-label={iconOption.label}
+                  >
+                    <img
+                      src={iconOption.value}
+                      alt={iconOption.label}
+                      className="icon-option-image"
+                      onError={(event) => {
+                        event.currentTarget.src = DEFAULT_IMAGE;
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <button className="add-task-btn" onClick={addTask}>
+          Add Task
+        </button>
       </section>
 
-      {/* List */}
       <section className="list-section">
-        {!tasks ? <p>Loading...</p> : (
+        <div className="task-summary">
+          <span className="summary-pill">Complete: {completedCount}</span>
+          <span className="summary-pill">Uncomplete: {uncompletedCount}</span>
+        </div>
+        {!tasks ? (
+          <p>Loading...</p>
+        ) : (
           <ul className="task-list">
             {tasks.map((task) => (
-              <li key={task.id} className="task-item">
-                <img src={task.image || DEFAULT_IMAGE} alt="Task" className="task-image" />
+              <li key={task.id} className={`task-item ${task.completed ? "is-completed" : ""}`}>
+                <div className="task-visual">
+                  {renderTaskIcon(task.icon || task.image, task.title)}
+                </div>
+
                 <div className="task-details">
                   <div className="task-title">{task.title}</div>
-                  {task.dueDate && <div className="task-due-date">{new Date(task.dueDate).toLocaleString()}</div>}
                 </div>
-                <button className="delete-task-btn" onClick={() => db.tasks.delete(task.id)}>Delete</button>
+
+                <div className="task-actions">
+                  <button className="complete-task-btn" onClick={() => toggleTaskCompleted(task)}>
+                    {task.completed ? "Uncomplete" : "Complete"}
+                  </button>
+                  <button className="delete-task-btn" onClick={() => db.tasks.delete(task.id)}>
+                    Delete
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

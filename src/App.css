@@ -1,4 +1,3 @@
-/* Base Reset for Full Screen */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,321 +5,416 @@
   font-family: sans-serif;
 }
 
-html, body, #root {
-  height: 100%;
+html,
+body,
+#root {
+  min-height: 100%;
   width: 100%;
-  
   overflow-x: hidden;
+  background: linear-gradient(180deg, #202020 0%, #313131 100%);
 }
+
+body {
+  color: #ffffff;
+}
+
 .App_Title {
   background: transparent;
   font-size: 28px;
   padding: 6px;
-  /* Your requested static shadow */
   box-shadow: rgb(98, 0, 255) 3px 3px;
   border-radius: 10px;
   font-weight: bold;
   font-family: Frutiger, sans-serif;
-  color: rgb(254, 255, 240);
+  color: rgb(213, 216, 169);
 }
 
-/* --- KEYFRAMES --- */
-
-/* Makes the entire border fade in and out of a glow */
-@keyframes borderGlow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(50, 5, 212, 0.2);
-    border-color: rgba(50, 5, 212, 0.3);
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
   }
   50% {
-    box-shadow: 0 0 20px rgba(50, 5, 212, 0.6);
-    border-color: rgba(80, 40, 255, 1);
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
-/* Makes a "beam" of light circle the border */
-@keyframes borderTrace {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* Main Container - Spans full screen */
 .todo-container {
   color: #ffffff;
-  background-color: #1a1a1a;
+  background:
+    radial-gradient(circle at top right, rgba(117, 85, 255, 0.18), transparent 30%),
+    linear-gradient(180deg, #2b2b2b 0%, #1e1e1e 100%);
   padding: 20px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-
+  gap: 18px;
+  min-height: 100vh;
 }
 
-/* Header */
 .todo-header {
-  border-radius: 8px;
-  /* Updated background to a moving gradient */
-  background: linear-gradient(-45deg, #060411, #291e5e, #110a30, #251663);
+  position: relative;
+  border-radius: 16px;
+  background: linear-gradient(-45deg, #2e294b, #291e5e, #595761, #251663);
   background-size: 400% 400%;
   animation: gradientBG 7s ease infinite;
-  
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  border-bottom: 1px solid #000;
-  margin-bottom: 20px;
-  color: white; /* Ensures text stays visible on dark background */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: white;
 }
 
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-/* Layout for the inside of the notification popup */
-.notification-popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #000;
-  margin-bottom: 10px;
-  padding-bottom: 5px;
+.todo-header-simple {
+  justify-content: flex-start;
 }
 
-.popup-close-x {
-  background: transparent;
-  border: 1px solid #000; /* Matching your wireframe style */
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0 5px;
-  line-height: 1;
-}
-
-/* Ensure the popup doesn't close when you click inside it */
-.notification-popup {
-  /* ... existing styles ... */
-  cursor: default; 
-}
-
-.notification-bell-container {
-  position: relative;
-  cursor: pointer;
-}
-.bell-img{
-  width:32px;
-  height: 32px;
-  background-color: white;
-  border-radius: 100%;
-}
-
-.notification-badge {
-  
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  border: 1px solid #000;
-  background: #fff;
-  padding: 2px 5px;
-  font-size: 10px;
-}
-
-/* Notification Popup */
-/* The Main Popup Container */
-.notification-popup {
-  position: absolute;
-  top: 70px; /* Increased slightly to clear the header glow */
-  right: 0;
-  width: 90vw; /* Better fit for mobile screens */
-  max-width: 320px;
-  
-  /* Glassmorphism Effect */
-  background: rgba(30, 30, 30, 0.8); /* Semi-transparent dark */
-  backdrop-filter: blur(12px); /* Frosts the content behind it */
-  -webkit-backdrop-filter: blur(12px);
-  
-  /* Modern Border & Shadow */
-  border: 1px solid rgba(0, 0, 0, 0.4); /* Purple tinted border */
-  border-radius: 16px; /* Smoother, rounder corners */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
-              0 0 15px rgba(98, 0, 255, 0.2);
-  
-  padding: 18px;
-  z-index: 1000;
-  
-  /* Entrance Animation */
-  animation: popupFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes popupFade {
-  from {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Header inside the popup */
-.notification-popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.notification-title {
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #bb7815; /* Light purple */
-  font-weight: bold;
-}
-
-/* Individual Notification Items */
-.notification-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 8px;
-  border-left: 3px solid rgb(98, 0, 255);
-  transition: background 0.2s;
-}
-
-.notification-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.notification-text {
-  font-size: 15px;
-  color: #ffffff;
-}
-
-/* Close/Dismiss Buttons */
-.popup-close-x, .notification-dismiss-btn {
-  background: transparent;
-  border: none;
-  color: #ff7675; /* Soft red */
-  font-size: 20px;
-  cursor: pointer;
-  line-height: 1;
-  padding: 5px;
-  transition: transform 0.2s;
-}
-
-.popup-close-x:hover, .notification-dismiss-btn:hover {
-  transform: scale(1.2);
-  color: #d63031;
-}
-
-.notification-empty {
-  text-align: center;
-  color: #636e72;
-  font-size: 14px;
-  padding: 10px 0;
-}
-.notification-dismiss{
-  background-color: #f11212;
-}
-
-.notification-item {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px dashed #000;
-  padding: 5px 0;
-}
-
-/* Inputs - Clean and Full Width */
 .input-section {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-bottom: 30px;
 }
 
-.task-input, .date-input, .file-input {
+.task-input {
   border-radius: 10px;
-  color: #c78d22;
+  color: #fffdfa;
   width: 100%;
   padding: 15px;
-  border: none; /* Removed all borders first for total control */
+  border: none;
   border-bottom: 2px solid #000000;
   border-right: 2px solid #000000;
   font-size: 16px;
-  background: transparent;
-  outline: none; /* This removes the default focus border */
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
 }
-.task-input:focus, .date-input:focus {
+
+.task-input:focus {
   border-bottom: 2px solid rgb(53, 5, 131);
   border-right: 2px solid rgb(58, 7, 139);
 }
-.add-task-btn {
-  color: #ffffff;
+
+.icon-picker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.icon-picker-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f7f2ff;
+}
+
+.icon-picker-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  padding: 15px;
-  border: 1px solid #595c59;
-  border-radius: 22px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.icon-picker-preview {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.icon-picker-preview-image,
+.icon-option-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.icon-picker-trigger-text {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.icon-picker-popup {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(20, 20, 20, 0.96);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  z-index: 1100;
+}
+
+.icon-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
+  gap: 10px;
+}
+
+.icon-option {
+  min-height: 62px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.icon-option.selected {
+  border-color: #8f71ff;
+  background: rgba(143, 113, 255, 0.24);
+  transform: translateY(-2px);
+}
+
+.add-task-btn,
+.complete-task-btn,
+.delete-task-btn {
+  color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 16px;
   background: transparent;
   font-weight: bold;
   cursor: pointer;
   text-transform: uppercase;
-  outline: none; /* Removes focus border on the button */
   transition: all 0.2s ease;
 }
 
-/* Removes focus on click for all elements globally just to be safe */
+.add-task-btn {
+  width: 100%;
+  border: 1px solid #595c59;
+}
+
+.complete-task-btn {
+  border: 1px solid #5fca7b;
+}
+
+.delete-task-btn {
+  border: 1px solid #c78407;
+}
+
 *:focus {
   outline: none !important;
 }
-.image-preview {
-  width: 100px;
-  height: auto;
-  border: 1px solid #000;
+
+.list-section {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border-radius: 22px;
+  padding: 10px 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-/* Task List */
 .task-list {
   list-style: none;
+}
+
+.task-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.summary-pill {
+  color: #1c1c1c;
+  background: #f2f2f2;
+  border: 1px solid #000;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .task-item {
   display: flex;
   align-items: center;
-  padding: 15px 0;
-  border-bottom: 1px solid #000;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.09);
 }
 
-.task-image { 
-  width: 80px;
-  height: 80px;
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-visual {
+  flex-shrink: 0;
+}
+
+.task-image,
+.task-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-image {
   object-fit: cover;
-  border-radius: 50px;
-  margin-right: 15px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.task-icon {
+  background: linear-gradient(145deg, #f7f2ff 0%, #e0d4ff 100%);
+  font-size: 34px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .task-details {
-  flex-grow: 1;
+  flex: 1;
+  min-width: 0;
 }
 
 .task-title {
-  color: rgb(233, 207, 160);
+  color: #b087e6;
   font-size: 18px;
   font-weight: bold;
+  word-break: break-word;
 }
 
-.task-due-date {
-  font-size: 12px;
+.task-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-.delete-task-btn {
-  border: 1px solid #000;
-  background: transparent;
-  padding: 5px 10px;
-  cursor: pointer;
+.task-item.is-completed .task-title {
+  text-decoration: line-through;
+  color: #6a6a6a;
+}
+
+@media (max-width: 700px) {
+  .todo-container {
+    padding: 14px;
+  }
+
+  .todo-header {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .App_Title {
+    font-size: 24px;
+  }
+
+  .task-item {
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+  }
+
+  .task-image,
+  .task-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
+  .task-icon {
+    font-size: 28px;
+  }
+
+  .task-title {
+    font-size: 15px;
+  }
+
+  .task-actions {
+    flex-direction: column;
+    gap: 8px;
+    min-width: 92px;
+  }
+
+  .complete-task-btn,
+  .delete-task-btn {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 11px;
+    border-radius: 12px;
+  }
+
+  .summary-pill {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .icon-picker-trigger {
+    padding: 10px 12px;
+  }
+
+  .icon-picker-preview {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@media (max-width: 480px) {
+  .todo-container {
+    padding: 12px;
+  }
+
+  .todo-header {
+    padding: 12px;
+  }
+
+  .App_Title {
+    font-size: 20px;
+  }
+
+  .list-section {
+    padding: 8px 10px;
+  }
+
+  .task-item {
+    gap: 8px;
+  }
+
+  .task-image,
+  .task-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+
+  .task-icon {
+    font-size: 24px;
+  }
+
+  .task-title {
+    font-size: 14px;
+  }
+
+  .task-actions {
+    min-width: 82px;
+  }
+
+  .complete-task-btn,
+  .delete-task-btn {
+    padding: 7px 8px;
+    font-size: 10px;
+  }
+
+  .icon-picker-popup {
+    padding: 10px;
+  }
 }
