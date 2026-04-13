@@ -161,6 +161,28 @@ body {
   z-index: 1100;
 }
 
+.icon-search-input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.icon-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.icon-empty-state {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+  text-align: center;
+  padding: 12px 0 4px;
+}
+
 .icon-options {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
@@ -197,6 +219,8 @@ body {
 }
 
 .add-task-btn {
+  color: black;
+  background-color: rgb(228, 228, 228);
   width: 100%;
   border: 1px solid #595c59;
 }
@@ -244,10 +268,12 @@ body {
 }
 
 .task-item {
+  border-radius: 20px;
+  background-color: #2f2e35;
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 16px 0;
+  padding: 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.09);
 }
 
@@ -257,6 +283,8 @@ body {
 
 .task-visual {
   flex-shrink: 0;
+  border-radius: 20px;
+  background-color: #291e5e;
 }
 
 .task-image,
@@ -321,7 +349,7 @@ body {
   .task-item {
     align-items: center;
     gap: 10px;
-    padding: 12px 0;
+    padding: 12px;
   }
 
   .task-image,
@@ -416,5 +444,10 @@ body {
 
   .icon-picker-popup {
     padding: 10px;
+  }
+
+  .icon-search-input {
+    padding: 10px 12px;
+    font-size: 13px;
   }
 }

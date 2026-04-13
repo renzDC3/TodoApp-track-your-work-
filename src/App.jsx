@@ -19,6 +19,7 @@ const App = () => {
   const [newTask, setNewTask] = useState("");
   const [selectedIcon, setSelectedIcon] = useState(ICON_CHOICES[0].value);
   const [showIconPicker, setShowIconPicker] = useState(false);
+  const [iconSearch, setIconSearch] = useState("");
 
   const iconPickerRef = useRef(null);
   const tasks = useLiveQuery(() => db.tasks.toArray(), []);
@@ -59,6 +60,10 @@ const App = () => {
   const completedCount = tasks?.filter((task) => task.completed).length || 0;
   const uncompletedCount = (tasks?.length || 0) - completedCount;
   const selectedIconLabel = ICON_CHOICES.find((icon) => icon.value === selectedIcon)?.label || "Choose icon";
+  const filteredIcons = ICON_CHOICES.filter((icon) =>
+    icon.label.toLowerCase().includes(iconSearch.toLowerCase()) ||
+    icon.value.toLowerCase().includes(iconSearch.toLowerCase())
+  );
 
   const renderTaskIcon = (iconValue, title) => {
     if (iconValue && iconValue.startsWith("/")) {
@@ -117,29 +122,43 @@ const App = () => {
 
           {showIconPicker && (
             <div className="icon-picker-popup">
-              <div className="icon-options">
-                {ICON_CHOICES.map((iconOption) => (
-                  <button
-                    key={iconOption.value}
-                    type="button"
-                    className={`icon-option ${selectedIcon === iconOption.value ? "selected" : ""}`}
-                    onClick={() => {
-                      setSelectedIcon(iconOption.value);
-                      setShowIconPicker(false);
-                    }}
-                    aria-label={iconOption.label}
-                  >
-                    <img
-                      src={iconOption.value}
-                      alt={iconOption.label}
-                      className="icon-option-image"
-                      onError={(event) => {
-                        event.currentTarget.src = DEFAULT_IMAGE;
+              <input
+                type="text"
+                className="icon-search-input"
+                placeholder="Search sticker or icon"
+                value={iconSearch}
+                onChange={(e) => setIconSearch(e.target.value)}
+              />
+
+              {filteredIcons.length === 0 ? (
+                <p className="icon-empty-state">No matching icons found.</p>
+              ) : (
+                <div className="icon-options">
+                  {filteredIcons.map((iconOption) => (
+                    <button
+                      key={iconOption.value}
+                      type="button"
+                      className={`icon-option ${selectedIcon === iconOption.value ? "selected" : ""}`}
+                      onClick={() => {
+                        setSelectedIcon(iconOption.value);
+                        setShowIconPicker(false);
+                        setIconSearch("");
                       }}
-                    />
-                  </button>
-                ))}
-              </div>
+                      aria-label={iconOption.label}
+                      title={iconOption.label}
+                    >
+                      <img
+                        src={iconOption.value}
+                        alt={iconOption.label}
+                        className="icon-option-image"
+                        onError={(event) => {
+                          event.currentTarget.src = DEFAULT_IMAGE;
+                        }}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
